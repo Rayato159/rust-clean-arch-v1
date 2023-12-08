@@ -1,0 +1,6 @@
+[axum]
+port = 8080
+
+[postgres]
+url = "postgres://postgres:123456@localhost:5432"
+db_name = "cockraochdb"

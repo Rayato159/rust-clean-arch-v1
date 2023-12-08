@@ -1,0 +1,19 @@
+[package]
+name = "rust-clean-arch-v1"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+axum = "0.7.2"
+tokio = { version = "1", features = ["full"] }
+async-trait = "0.1.74"
+tower = { version = "0.4", features = ["full"] }
+tower-http = "0.4"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tracing-subscriber = "0.3"
+tracing = "0.1"
+config = "0.13.4"
+sea-orm = { version = "0.12", features = [ "sqlx-postgres", "runtime-tokio-native-tls", "macros" ] }
