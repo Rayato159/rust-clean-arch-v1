@@ -7,10 +7,16 @@ pub mod database;
 pub mod settings;
 pub mod cockroach;
 
-use database::{postgres_database::PostgresDatabase, Database};
 use settings::AppSetting;
 
-use cockroach::repositories::postgres_repository::CockroachPostgresRepository;
+use database::{postgres_database::PostgresDatabase, Database};
+
+use cockroach::{
+    repositories::postgres_repository::CockroachPostgresRepository,
+    messaging::fcm_messaging::CockroachFCMMessaging,
+    usecases::usecase_impl::CockroachUsecaseImpl,
+    handlers::axum_handler::CockroachAxumHandler,
+};
 
 #[tokio::main]
 async fn main() {
@@ -26,9 +32,22 @@ async fn main() {
         .unwrap();
 
     let cockroach_repository = CockroachPostgresRepository::new(db);
+    let cockroach_messaging = CockroachFCMMessaging::new();
 
-    let app = Router::new().route("/", get(|| async { "Hello, World!" }));
+    let cockroach_usecase = CockroachUsecaseImpl::new(
+        Box::new(cockroach_repository),
+        Box::new(cockroach_messaging),
+    );
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let cockroach_handler = CockroachAxumHandler::new(
+        Box::new(cockroach_usecase)
+    );
+
+    let app = Router::new()
+        .route("/", get(|| async { "OK" }));
+
+    let app_url = format!("0.0.0.0:{}", settings.server.port);
+
+    let listener = tokio::net::TcpListener::bind(app_url).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }

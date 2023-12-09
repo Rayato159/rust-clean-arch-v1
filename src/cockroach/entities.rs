@@ -1,1 +1,1 @@
-pub mod cockroach;
+pub mod cockroach_entities;

@@ -1,8 +1,10 @@
-use super::entities::cockroach::Cockroach;
+use async_trait::async_trait;
+
+use super::entities::cockroach_entities::Cockroach;
 
 pub mod postgres_repository;
 
-#[async_trait::async_trait]
+#[async_trait]
 pub trait CockroachRepository {
-    async fn select_cockroach_data(&self) -> Vec<Cockroach>;
+    async fn insert_cockroach_data(&self, cockroach_data: Cockroach);
 }

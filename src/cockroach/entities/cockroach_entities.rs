@@ -1,5 +1,6 @@
 use chrono::NaiveDateTime;
 
+#[derive(Default)]
 pub struct Cockroach {
     pub id: Option<i32>,
     pub amount: i32,
