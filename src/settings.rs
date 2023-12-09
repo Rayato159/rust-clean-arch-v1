@@ -1,4 +1,5 @@
 use config::{Config, File};
+use tracing::log::info;
 
 pub mod axum_setting;
 pub mod postgres_setting;
@@ -19,6 +20,8 @@ impl AppSetting {
             .add_source(settings_file)
             .build()
             .unwrap();
+
+        info!("Loaded settings.");
 
         Self {
             server: AxumSetting {
