@@ -5,11 +5,12 @@ use axum::{
 
 pub mod database;
 pub mod settings;
+pub mod cockroach;
 
-use database::postgres_database::PostgresDatabase;
-use database::Database;
-
+use database::{postgres_database::PostgresDatabase, Database};
 use settings::AppSetting;
+
+use cockroach::repositories::postgres_repository::CockroachPostgresRepository;
 
 #[tokio::main]
 async fn main() {
@@ -19,7 +20,12 @@ async fn main() {
 
     let settings = AppSetting::new();
 
-    let db = PostgresDatabase::new(settings.database);
+    let db = PostgresDatabase::new(settings.database)
+        .get_db()
+        .await
+        .unwrap();
+
+    let cockroach_repository = CockroachPostgresRepository::new(db);
 
     let app = Router::new().route("/", get(|| async { "Hello, World!" }));
 
