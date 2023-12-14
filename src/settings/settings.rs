@@ -11,7 +11,7 @@ pub struct AppSetting {
 
 impl AppSetting {
     pub fn new() -> Self {
-        let settings_file = File::with_name("src/Settings");
+        let settings_file = File::with_name("src/settings/Settings");
 
         let settings = Config::builder()
             .add_source(settings_file)
