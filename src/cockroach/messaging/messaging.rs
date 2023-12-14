@@ -1,8 +1,6 @@
 use async_trait::async_trait;
 
-pub mod fcm_messaging;
-
-use super::models::cockroach_model::CockroachNotification;
+use crate::cockroach::models::cockroach::CockroachNotification;
 
 #[async_trait]
 pub trait CockroachMessaging {

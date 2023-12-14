@@ -2,10 +2,9 @@ use async_trait::async_trait;
 
 use sea_orm::DatabaseConnection;
 
-use crate::cockroach::{
-    entities::cockroach_entities::Cockroach,
-    repositories::CockroachRepository
-};
+use super::repositories::CockroachRepository;
+
+use crate::cockroach::entities::cockroach::Cockroach;
 
 pub struct CockroachPostgresRepository {
     db: DatabaseConnection,

@@ -1,12 +1,13 @@
 use async_trait::async_trait;
 
-use crate::cockroach::{
-    usecases::CockroachUsecase,
-    repositories::CockroachRepository,
-    messaging::CockroachMessaging,
+use super::usecases::CockroachUsecase;
 
-    entities::cockroach_entities::Cockroach,
-    models::cockroach_model::{
+use crate::cockroach::{
+    repositories::repositories::CockroachRepository,
+    messaging::messaging::CockroachMessaging,
+
+    entities::cockroach::Cockroach,
+    models::cockroach::{
         CockroachNotification,
         InsertCockroachData
     },

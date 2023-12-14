@@ -1,11 +1,8 @@
 use config::{Config, File};
 use tracing::log::info;
 
-pub mod axum_setting;
-pub mod postgres_setting;
-
-use axum_setting::AxumSetting;
-use postgres_setting::PostgresSetting;
+use super::axum_setting::AxumSetting;
+use super::postgres_setting::PostgresSetting;
 
 pub struct AppSetting {
     pub server: AxumSetting,

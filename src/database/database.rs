@@ -1,5 +1,3 @@
-pub mod postgres_database;
-
 use sea_orm::{
     DatabaseConnection,
     DbErr

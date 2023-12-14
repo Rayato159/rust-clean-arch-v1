@@ -1,4 +1,4 @@
-use crate::database::Database;
+use super::database::Database;
 use crate::settings::postgres_setting::PostgresSetting;
 use tracing::log::info;
 

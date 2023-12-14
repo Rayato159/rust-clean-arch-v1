@@ -2,10 +2,9 @@ use async_trait::async_trait;
 
 use tracing::log::info;
 
-use crate::cockroach::{
-    messaging::CockroachMessaging,
-    models::cockroach_model::CockroachNotification
-};
+use super::messaging::CockroachMessaging;
+
+use crate::cockroach::models::cockroach::CockroachNotification;
 
 pub struct CockroachFCMMessaging;
 

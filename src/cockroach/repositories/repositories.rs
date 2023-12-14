@@ -1,8 +1,6 @@
 use async_trait::async_trait;
 
-use super::entities::cockroach_entities::Cockroach;
-
-pub mod postgres_repository;
+use crate::cockroach::entities::cockroach::Cockroach;
 
 #[async_trait]
 pub trait CockroachRepository {

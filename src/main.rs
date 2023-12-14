@@ -3,13 +3,13 @@ use axum::{
     Router,
 };
 
-pub mod database;
 pub mod settings;
+pub mod database;
 pub mod cockroach;
 
-use settings::AppSetting;
+use settings::settings::AppSetting;
 
-use database::{postgres_database::PostgresDatabase, Database};
+use database::{postgres_database::PostgresDatabase, database::Database};
 
 use cockroach::{
     repositories::postgres_repository::CockroachPostgresRepository,

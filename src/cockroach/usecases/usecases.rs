@@ -1,8 +1,6 @@
 use async_trait::async_trait;
 
-use super::models::cockroach_model::InsertCockroachData;
-
-pub mod usecase_impl;
+use crate::cockroach::models::cockroach::InsertCockroachData;
 
 #[async_trait]
 pub trait CockroachUsecase {
