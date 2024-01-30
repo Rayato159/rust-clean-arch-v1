@@ -8,6 +8,7 @@ use sea_orm::{
     DbErr
 };
 
+#[derive(Clone)]
 pub struct PostgresDatabase {
     setting: PostgresSetting,
 }

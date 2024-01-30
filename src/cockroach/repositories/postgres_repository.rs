@@ -1,18 +1,18 @@
 use async_trait::async_trait;
-
 use sea_orm::DatabaseConnection;
 
 use super::repositories::CockroachRepository;
 
 use crate::cockroach::entities::cockroach::Cockroach;
 
+#[derive(Clone)]
 pub struct CockroachPostgresRepository {
     db: DatabaseConnection,
 }
 
 impl CockroachPostgresRepository {
-    pub fn new(db: DatabaseConnection) -> impl CockroachRepository {
-        CockroachPostgresRepository { db }
+    pub fn new(db: DatabaseConnection) -> Self {
+        Self { db }
     }
 }
 

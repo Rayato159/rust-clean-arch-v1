@@ -13,17 +13,22 @@ use crate::cockroach::{
     },
 };
 
-pub struct CockroachUsecaseImpl {
-    repository: Box<dyn CockroachRepository + Sync>,
-    messaging: Box<dyn CockroachMessaging + Sync>,
+#[derive(Clone)]
+pub struct CockroachUsecaseImpl<T, U> {
+    repository: T,
+    messaging: U,
 }
 
-impl CockroachUsecaseImpl {
+impl<T, U> CockroachUsecaseImpl<T, U> 
+where
+    T: CockroachRepository + Sync + Send,
+    U: CockroachMessaging + Sync + Send,
+{
     pub fn new(
-        repository: Box<dyn CockroachRepository + Sync>,
-        messaging: Box<dyn CockroachMessaging + Sync>,
-    ) -> impl CockroachUsecase {
-        CockroachUsecaseImpl { 
+        repository: T,
+        messaging: U,
+    ) -> CockroachUsecaseImpl<T, U> {
+        Self { 
             repository,
             messaging,
         }
@@ -31,7 +36,11 @@ impl CockroachUsecaseImpl {
 }
 
 #[async_trait]
-impl CockroachUsecase for CockroachUsecaseImpl {
+impl<T, U> CockroachUsecase for CockroachUsecaseImpl<T, U> 
+where
+    T: CockroachRepository + Sync + Send,
+    U: CockroachMessaging + Sync + Send,
+{
     async fn cockroach_detected(&self, cockroach_to_insert: InsertCockroachData) {
         let cockroach_data = Cockroach {
             amount: cockroach_to_insert.amount,

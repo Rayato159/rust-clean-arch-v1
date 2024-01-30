@@ -6,11 +6,12 @@ use super::messaging::CockroachMessaging;
 
 use crate::cockroach::models::cockroach::CockroachNotification;
 
+#[derive(Clone)]
 pub struct CockroachFCMMessaging;
 
 impl CockroachFCMMessaging {
-    pub fn new() -> impl CockroachMessaging {
-        CockroachFCMMessaging
+    pub fn new() -> Self {
+        Self {}
     }
 }
 

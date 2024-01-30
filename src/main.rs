@@ -1,17 +1,13 @@
 use axum::{
-    routing::get,
+    routing::{get, post},
     Router,
 };
 
-pub mod settings;
-pub mod database;
-pub mod cockroach;
+use rust_clean_arch_v1::settings::settings::AppSetting;
 
-use settings::settings::AppSetting;
+use rust_clean_arch_v1::database::{postgres_database::PostgresDatabase, database::Database};
 
-use database::{postgres_database::PostgresDatabase, database::Database};
-
-use cockroach::{
+use rust_clean_arch_v1::cockroach::{
     repositories::postgres_repository::CockroachPostgresRepository,
     messaging::fcm_messaging::CockroachFCMMessaging,
     usecases::usecase_impl::CockroachUsecaseImpl,
@@ -31,20 +27,18 @@ async fn main() {
         .await
         .unwrap();
 
-    let cockroach_repository = CockroachPostgresRepository::new(db);
-    let cockroach_messaging = CockroachFCMMessaging::new();
-
     let cockroach_usecase = CockroachUsecaseImpl::new(
-        Box::new(cockroach_repository),
-        Box::new(cockroach_messaging),
+        CockroachPostgresRepository::new(db),
+        CockroachFCMMessaging::new(),
     );
 
     let cockroach_handler = CockroachAxumHandler::new(
-        Box::new(cockroach_usecase)
+        cockroach_usecase
     );
 
     let app = Router::new()
-        .route("/", get(|| async { "OK" }));
+        .route("/", get(|| async { "OK" }))
+        .route("/v1/cockroach", post(cockroach_handler.cockroach_detected));
 
     let app_url = format!("0.0.0.0:{}", settings.server.port);
 
