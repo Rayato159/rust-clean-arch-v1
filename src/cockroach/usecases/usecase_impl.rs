@@ -21,8 +21,8 @@ pub struct CockroachUsecaseImpl<T, U> {
 
 impl<T, U> CockroachUsecaseImpl<T, U> 
 where
-    T: CockroachRepository + Sync + Send,
-    U: CockroachMessaging + Sync + Send,
+    T: CockroachRepository + Clone + Send + Sync + 'static,
+    U: CockroachMessaging + Clone + Send + Sync + 'static,
 {
     pub fn new(
         repository: T,
@@ -38,8 +38,8 @@ where
 #[async_trait]
 impl<T, U> CockroachUsecase for CockroachUsecaseImpl<T, U> 
 where
-    T: CockroachRepository + Sync + Send,
-    U: CockroachMessaging + Sync + Send,
+    T: CockroachRepository + Clone + Send + Sync + 'static,
+    U: CockroachMessaging + Clone + Send + Sync + 'static,
 {
     async fn cockroach_detected(&self, cockroach_to_insert: InsertCockroachData) {
         let cockroach_data = Cockroach {

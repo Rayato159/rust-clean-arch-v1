@@ -1,3 +1,5 @@
+use std::borrow::BorrowMut;
+
 use async_trait::async_trait;
 use sea_orm::DatabaseConnection;
 
@@ -11,8 +13,8 @@ pub struct CockroachPostgresRepository {
 }
 
 impl CockroachPostgresRepository {
-    pub fn new(db: DatabaseConnection) -> Self {
-        Self { db }
+    pub fn new<'a>(db: &'a DatabaseConnection) -> Self {
+        CockroachPostgresRepository { db: db.clone() }
     }
 }
 

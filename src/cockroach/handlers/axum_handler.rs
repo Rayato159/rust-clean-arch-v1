@@ -1,23 +1,10 @@
-use async_trait::async_trait;
-
-use axum::body::Body;
-use axum::response::{IntoResponse, Json, Response};
-
-use super::handlers::CockroachHandler;
+use axum::http::StatusCode;
+use axum::response::{IntoResponse, Json};
+use serde_json::json;
 
 use crate::cockroach::usecases::usecases::CockroachUsecase;
 
 use crate::cockroach::models::cockroach::InsertCockroachData;
-
-enum SuccessResponse {
-    CockroachDetectedSuccess
-}
-
-impl IntoResponse for SuccessResponse {
-    fn into_response(self) -> Response {
-        Response::new(Body::new("OK".to_string()))
-    }
-}
 
 #[derive(Clone)]
 pub struct CockroachAxumHandler<T> {
@@ -26,21 +13,20 @@ pub struct CockroachAxumHandler<T> {
 
 impl<T> CockroachAxumHandler<T>
 where
-    T: CockroachUsecase + Sync + Send
+    T: CockroachUsecase + Clone + Send + Sync + 'static,
 {
     pub fn new(usecase: T) -> CockroachAxumHandler<T> {
         Self { usecase }
     }
-}
 
-#[async_trait]
-impl<T> CockroachHandler for CockroachAxumHandler<T>
-where
-    T: CockroachUsecase + Sync + Send,
-{
-    async fn cockroach_detected(&self, Json(cockroach_to_insert): Json<InsertCockroachData>) -> Box<dyn IntoResponse> {
+    pub async fn cockroach_detected(&self, Json(cockroach_to_insert): Json<InsertCockroachData>) -> impl IntoResponse {
         self.usecase.cockroach_detected(cockroach_to_insert).await;
 
-        Box::new(SuccessResponse::CockroachDetectedSuccess)
+        (
+            StatusCode::OK,
+            Json(json!({
+                "message": "insert cockroach success",
+            })).into_response()
+        )
     }
 }

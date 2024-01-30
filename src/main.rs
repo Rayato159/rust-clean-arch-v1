@@ -1,6 +1,6 @@
 use axum::{
-    routing::{get, post},
-    Router,
+    routing::{get, post}, 
+    Router
 };
 
 use rust_clean_arch_v1::settings::settings::AppSetting;
@@ -28,7 +28,7 @@ async fn main() {
         .unwrap();
 
     let cockroach_usecase = CockroachUsecaseImpl::new(
-        CockroachPostgresRepository::new(db),
+        CockroachPostgresRepository::new(&db),
         CockroachFCMMessaging::new(),
     );
 
@@ -38,7 +38,11 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(|| async { "OK" }))
-        .route("/v1/cockroach", post(cockroach_handler.cockroach_detected));
+        .route("/v1/cockroach", post(
+            |body| async move { 
+                cockroach_handler.cockroach_detected(body).await 
+            })
+        );
 
     let app_url = format!("0.0.0.0:{}", settings.server.port);
 
