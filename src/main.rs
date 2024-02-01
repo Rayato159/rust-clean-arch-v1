@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use axum::{
     routing::{get, post}, 
     Router
@@ -27,25 +29,35 @@ async fn main() {
         .await
         .unwrap();
 
-    let cockroach_usecase = CockroachUsecaseImpl::new(
-        CockroachPostgresRepository::new(&db),
-        CockroachFCMMessaging::new(),
-    );
+    let cockroach_usecase = Arc::new(CockroachUsecaseImpl::new(
+        Arc::new(CockroachPostgresRepository::new(&db)), 
+        Arc::new(CockroachFCMMessaging::new())
+    ));
 
-    let cockroach_handler = CockroachAxumHandler::new(
-        cockroach_usecase
-    );
+    let cockroach_handler = Arc::new(CockroachAxumHandler::new(
+        Arc::clone(&cockroach_usecase)
+    ));
+
+    let cockroach_detected_handler = Arc::clone(&cockroach_handler);
+    let cockroach_more_handler = Arc::clone(&cockroach_handler);
 
     let app = Router::new()
         .route("/", get(|| async { "OK" }))
         .route("/v1/cockroach", post(
             |body| async move { 
-                cockroach_handler.cockroach_detected(body).await 
+                cockroach_detected_handler
+                    .cockroach_detected(body).await 
+            })
+        )
+        .route("/v1/cockroach/more-handler", post(
+            |body| async move { 
+                cockroach_more_handler
+                    .cockroach_detected(body).await 
             })
         );
 
     let app_url = format!("0.0.0.0:{}", settings.server.port);
 
-    let listener = tokio::net::TcpListener::bind(app_url).await.unwrap();
+    let listener = tokio::net::TcpListener::bind(app_url.clone()).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }

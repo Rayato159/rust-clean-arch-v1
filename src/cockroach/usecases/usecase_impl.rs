@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use async_trait::async_trait;
 
 use super::usecases::CockroachUsecase;
@@ -15,8 +17,8 @@ use crate::cockroach::{
 
 #[derive(Clone)]
 pub struct CockroachUsecaseImpl<T, U> {
-    repository: T,
-    messaging: U,
+    repository: Arc<T>,
+    messaging: Arc<U>,
 }
 
 impl<T, U> CockroachUsecaseImpl<T, U> 
@@ -25,8 +27,8 @@ where
     U: CockroachMessaging + Clone + Send + Sync + 'static,
 {
     pub fn new(
-        repository: T,
-        messaging: U,
+        repository: Arc<T>,
+        messaging: Arc<U>,
     ) -> CockroachUsecaseImpl<T, U> {
         Self { 
             repository,

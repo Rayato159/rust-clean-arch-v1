@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Json};
 use serde_json::json;
@@ -8,14 +10,14 @@ use crate::cockroach::models::cockroach::InsertCockroachData;
 
 #[derive(Clone)]
 pub struct CockroachAxumHandler<T> {
-    usecase: T
+    usecase: Arc<T>
 }
 
 impl<T> CockroachAxumHandler<T>
 where
     T: CockroachUsecase + Clone + Send + Sync + 'static,
 {
-    pub fn new(usecase: T) -> CockroachAxumHandler<T> {
+    pub fn new(usecase: Arc<T>) -> CockroachAxumHandler<T> {
         Self { usecase }
     }
 
