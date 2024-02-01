@@ -1,8 +1,7 @@
 use super::database::Database;
 use crate::settings::postgres_setting::PostgresSetting;
 use async_trait::async_trait;
-use diesel::pg::PgConnection;
-use diesel::prelude::*;
+use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
 
 #[derive(Clone)]
@@ -18,13 +17,16 @@ impl PostgresDatabase {
 
 #[async_trait]
 impl Database for PostgresDatabase {
-    async fn get_db(&self) -> PgConnection {
+    async fn get_db(&self) -> Result<Pool<Postgres>, sqlx::Error> {
         let database_url = self
             .setting
             .clone()
             .url;
 
-        PgConnection::establish(&database_url)
-            .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
+        let pool = PgPoolOptions::new()
+            .max_connections(5)
+            .connect(&database_url).await?;
+    
+        Ok(pool)
     }
 }

@@ -1,31 +1,30 @@
-use std::sync::Arc;
 use async_trait::async_trait;
+use sqlx::{Pool, Postgres};
+use std::{error::Error, result::Result, sync::Arc};
 use super::repositories::CockroachRepository;
-use crate::{cockroach::entities::cockroach::Cockroach, database::database::Database};
+use crate::cockroach::entities::cockroach::Cockroach;
 
 #[derive(Clone)]
-pub struct CockroachPostgresRepository<T> 
-where
-    T: Database + Send + Sync + 'static,
-{
-    db: Arc<T>,
+pub struct CockroachPostgresRepository {
+    db: Arc<Pool<Postgres>>,
 }
 
-impl<T> CockroachPostgresRepository<T> 
-where
-    T: Database + Send + Sync + 'static,
-{
-    pub fn new(db: Arc<T>) -> CockroachPostgresRepository<T> {
+impl CockroachPostgresRepository {
+    pub fn new(db: Arc<Pool<Postgres>>) -> CockroachPostgresRepository {
         Self { db }
     }
 }
 
 #[async_trait]
-impl<T> CockroachRepository for CockroachPostgresRepository<T> 
-where
-    T: Database + Send + Sync + 'static,
-{
-    async fn insert_cockroach_data(&self, cockroach_data: &Cockroach) {
-        let conn = self.db.get_db().await;
+impl CockroachRepository for CockroachPostgresRepository
+where {
+    async fn insert_cockroach_data(&self, cockroach_data: &Cockroach) -> Result<Cockroach, Box<dyn Error>> {
+        let conn = &self.db;
+
+        Ok(Cockroach {
+            id: Some(1),
+            amount: 1,
+            ..Default::default()
+        })
     }
 }

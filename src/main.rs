@@ -20,7 +20,7 @@ async fn main() {
 
     let settings = AppSetting::new();
 
-    let db = Arc::new(PostgresDatabase::new(settings.database));
+    let db = Arc::new(PostgresDatabase::new(settings.database).get_db().await.unwrap());
     let db_arc = Arc::clone(&db);
 
     let cockroach_repo = Arc::new(CockroachPostgresRepository::new(db_arc));
