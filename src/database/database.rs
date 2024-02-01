@@ -1,9 +1,7 @@
-use sea_orm::{
-    DatabaseConnection,
-    DbErr
-};
+use async_trait::async_trait;
+use diesel::PgConnection;
 
-#[async_trait::async_trait]
+#[async_trait]
 pub trait Database {
-    async fn get_db(&self) -> Result<DatabaseConnection, DbErr>;
+    async fn get_db(&self) -> PgConnection;
 }

@@ -1,9 +1,6 @@
 use std::sync::Arc;
-
 use async_trait::async_trait;
-
 use super::usecases::CockroachUsecase;
-
 use crate::cockroach::{
     repositories::repositories::CockroachRepository,
     messaging::messaging::CockroachMessaging,
@@ -16,7 +13,11 @@ use crate::cockroach::{
 };
 
 #[derive(Clone)]
-pub struct CockroachUsecaseImpl<T, U> {
+pub struct CockroachUsecaseImpl<T, U> 
+where
+    T: CockroachRepository + Clone + Send + Sync + 'static,
+    U: CockroachMessaging + Clone + Send + Sync + 'static
+{
     repository: Arc<T>,
     messaging: Arc<U>,
 }
@@ -24,7 +25,7 @@ pub struct CockroachUsecaseImpl<T, U> {
 impl<T, U> CockroachUsecaseImpl<T, U> 
 where
     T: CockroachRepository + Clone + Send + Sync + 'static,
-    U: CockroachMessaging + Clone + Send + Sync + 'static,
+    U: CockroachMessaging + Clone + Send + Sync + 'static
 {
     pub fn new(
         repository: Arc<T>,
@@ -41,21 +42,21 @@ where
 impl<T, U> CockroachUsecase for CockroachUsecaseImpl<T, U> 
 where
     T: CockroachRepository + Clone + Send + Sync + 'static,
-    U: CockroachMessaging + Clone + Send + Sync + 'static,
+    U: CockroachMessaging + Clone + Send + Sync + 'static
 {
-    async fn cockroach_detected(&self, cockroach_to_insert: InsertCockroachData) {
-        let cockroach_data = Cockroach {
+    async fn cockroach_detected(&self, cockroach_to_insert: &InsertCockroachData) {
+        let cockroach = Cockroach {
             amount: cockroach_to_insert.amount,
             ..Default::default()
         };
 
-        self.repository.insert_cockroach_data(cockroach_data).await;
+        self.repository.insert_cockroach_data(&cockroach).await;
         
         let cockroach_notification = CockroachNotification {
             amount: cockroach_to_insert.amount,
-            issue_at: chrono::Utc::now().naive_utc(),
+            ..Default::default()
         };
 
-        self.messaging.push_notification(cockroach_notification).await;
+        self.messaging.push_notification(&cockroach_notification).await;
     }
 }

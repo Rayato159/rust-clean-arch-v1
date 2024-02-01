@@ -6,15 +6,8 @@ pub struct InsertCockroachData {
     pub amount: i32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Default, Debug)]
 pub struct CockroachNotification {
     pub amount: i32,
-    pub issue_at: NaiveDateTime,
-}
-
-pub struct SelectCockroachData {
-    pub id: i32,
-    pub amount: i32,
-    pub created_at: NaiveDateTime,
-    pub updated_at: NaiveDateTime,
+    pub notified_at: NaiveDateTime,
 }

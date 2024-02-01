@@ -1,14 +1,10 @@
-use std::sync::Arc;
-
+use std::{rc::Rc, sync::Arc};
 use axum::{
     routing::{get, post}, 
     Router
 };
-
-use rust_clean_arch_v1::settings::settings::AppSetting;
-
+use rust_clean_arch_v1::{cockroach, settings::settings::AppSetting};
 use rust_clean_arch_v1::database::{postgres_database::PostgresDatabase, database::Database};
-
 use rust_clean_arch_v1::cockroach::{
     repositories::postgres_repository::CockroachPostgresRepository,
     messaging::fcm_messaging::CockroachFCMMessaging,
@@ -24,18 +20,23 @@ async fn main() {
 
     let settings = AppSetting::new();
 
-    let db = PostgresDatabase::new(settings.database)
-        .get_db()
-        .await
-        .unwrap();
+    let db = Arc::new(PostgresDatabase::new(settings.database));
+    let db_arc = Arc::clone(&db);
+
+    let cockroach_repo = Arc::new(CockroachPostgresRepository::new(db_arc));
+    let cockroach_messaging = Arc::new(CockroachFCMMessaging::new());
+
+    let cockroach_repo_arc = Arc::clone(&cockroach_repo);
+    let cockroach_messaging_arc = Arc::clone(&cockroach_messaging);
 
     let cockroach_usecase = Arc::new(CockroachUsecaseImpl::new(
-        Arc::new(CockroachPostgresRepository::new(&db)), 
-        Arc::new(CockroachFCMMessaging::new())
+        cockroach_repo_arc, 
+        cockroach_messaging_arc
     ));
+    let cockroach_usecase_arc = Arc::clone(&cockroach_usecase);
 
     let cockroach_handler = Arc::new(CockroachAxumHandler::new(
-        Arc::clone(&cockroach_usecase)
+        cockroach_usecase_arc
     ));
 
     let cockroach_detected_handler = Arc::clone(&cockroach_handler);

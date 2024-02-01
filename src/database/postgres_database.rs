@@ -1,12 +1,9 @@
 use super::database::Database;
 use crate::settings::postgres_setting::PostgresSetting;
-use tracing::log::info;
+use async_trait::async_trait;
+use diesel::pg::PgConnection;
+use diesel::prelude::*;
 
-use sea_orm::{
-    Database as SeaORMDatabase,
-    DatabaseConnection,
-    DbErr
-};
 
 #[derive(Clone)]
 pub struct PostgresDatabase {
@@ -14,18 +11,20 @@ pub struct PostgresDatabase {
 }
 
 impl PostgresDatabase {
-    pub fn new(setting: PostgresSetting) -> Self {
-        Self {setting}
+    pub fn new(setting: PostgresSetting) -> PostgresDatabase {
+        Self { setting }
     }
 }
 
-#[async_trait::async_trait]
+#[async_trait]
 impl Database for PostgresDatabase {
-    async fn get_db(&self) -> Result<DatabaseConnection, DbErr> {
-        let db = SeaORMDatabase::connect(&self.setting.url).await?;
-        
-        info!("Connected to Postgres database.");
+    async fn get_db(&self) -> PgConnection {
+        let database_url = self
+            .setting
+            .clone()
+            .url;
 
-        Ok(db)
+        PgConnection::establish(&database_url)
+            .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
     }
 }
